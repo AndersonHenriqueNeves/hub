@@ -53,10 +53,10 @@ const submitForm = () => {
     const users = JSON.parse(localStorage.getItem("users"));
 
     const findUser = users.find((e) => e.email == form.value.email);
-    console.log(findUser);
 
     if (findUser) {
       if (findUser.senha == form.value.senha) {
+        localStorage.setItem("userLogado", JSON.stringify(findUser));
         router.push("/selecoes");
       } else {
         alert("Email ou senha errado");
@@ -64,6 +64,8 @@ const submitForm = () => {
     } else {
       alert("Email ou senha errado");
     }
+  } else {
+    alert("Email ou senha errado");
   }
 
   //   router.push("/login");

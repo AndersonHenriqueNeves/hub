@@ -5,7 +5,14 @@
         class="q-py-md bg-white flex justify-between"
         style="width: 100%"
       >
-        <q-img src="../assets/govpelogo.png" class="img-logo" />
+        <div class="row items-center">
+          <q-img src="../assets/govpelogo.png" class="img-logo q-mr-md" />
+
+          <div class="row flex items-center" v-if="userLogado">
+            <p class="hello q-mr-md q-mb-none">Olá, Anderson</p>
+            <p class="hello cursor-pointer no-margin" @click="logOut">Sair</p>
+          </div>
+        </div>
 
         <header class="navbar">
           <nav>
@@ -50,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -58,13 +65,31 @@ const route = useRoute();
 
 const model = ref(route.path);
 
+const userLogado = ref("");
+
 function changeRoute(route: string) {
   model.value = route;
   router.push(model.value);
 }
 
+function logOut() {
+  localStorage.removeItem("userLogado");
+  userLogado.value = "";
+  router.push("/login");
+}
+
 watch(route, () => {
   model.value = route.path;
+
+  if (localStorage.getItem("userLogado")) {
+    userLogado.value = JSON.parse(localStorage.getItem("userLogado") || "");
+  }
+});
+
+onMounted(() => {
+  if (localStorage.getItem("userLogado")) {
+    userLogado.value = JSON.parse(localStorage.getItem("userLogado") || "");
+  }
 });
 </script>
 
@@ -99,5 +124,10 @@ a {
 
 .active-border {
   border-bottom: 0.125rem solid #ffcc00;
+}
+
+.hello {
+  color: black;
+  font-size: 1rem;
 }
 </style>
