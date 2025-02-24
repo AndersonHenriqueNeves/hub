@@ -9,7 +9,7 @@
           <q-img src="../assets/govpelogo.png" class="img-logo q-mr-md" />
 
           <div class="row flex items-center" v-if="userLogado">
-            <p class="hello q-mr-md q-mb-none">Olá, Anderson</p>
+            <p class="hello q-mr-md q-mb-none">Olá, {{ userLogado.nome }}</p>
             <p class="hello cursor-pointer no-margin" @click="logOut">Sair</p>
           </div>
         </div>
