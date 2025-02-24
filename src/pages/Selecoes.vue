@@ -28,8 +28,15 @@
               />
               <q-btn
                 color="secondary"
+                class="q-mr-sm"
                 label="Resultado preliminares"
                 @click="downloadPdf(props.row.documentacao.resultado)"
+              />
+              <q-btn
+                v-if="userLogged"
+                color="black"
+                label="Inscrever-se"
+                @click="openUpload(props.row.selecao)"
               />
             </div>
           </q-td>
@@ -40,10 +47,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import edital from "../assets/2. Edital.pdf";
 import decreto from "../assets/1.Decreto Autorizativo.pdf";
 import resultado from "../assets/9.Resultado Preliminar - 2ª Convocação.pdf";
+import { useQuasar } from "quasar";
+import DialogUpload from "src/components/DialogUpload.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const columns = ref([
   {
@@ -108,6 +120,10 @@ const rows = ref([
   },
 ]);
 
+const $q = useQuasar();
+
+const userLogged = ref(false);
+
 const downloadPdf = (file: string) => {
   const link = document.createElement("a");
 
@@ -126,6 +142,57 @@ const downloadPdf = (file: string) => {
   link.download = `${file}.pdf`;
   link.click();
 };
+
+function openUpload(selecao: string) {
+  $q.dialog({
+    component: DialogUpload,
+  })
+    .onOk(() => {
+      console.log("onOk");
+      const sel = localStorage.getItem("userSelecoes");
+      let newSel = [];
+      if (sel) {
+        newSel = JSON.parse(sel);
+
+        newSel.push({
+          id: generateRandomNumber(1, 8),
+          process: selecao,
+          insc: generateRandomNumber(1, 8),
+          cpf: userLogged.value.cpf,
+          name: userLogged.value.nome,
+        });
+      } else {
+        newSel.push({
+          id: generateRandomNumber(1, 8),
+          process: selecao,
+          insc: generateRandomNumber(1, 8),
+          cpf: userLogged.value.cpf,
+          name: userLogged.value.nome,
+        });
+      }
+
+      localStorage.setItem("userSelecoes", JSON.stringify(newSel));
+
+      router.push("/inscricoes");
+    })
+    .onCancel(() => {
+      // console.log('Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
+}
+
+function generateRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+onMounted(() => {
+  const user = localStorage.getItem("userLogado");
+  if (user) {
+    userLogged.value = JSON.parse(user);
+  }
+});
 </script>
 
 <style lang="scss">

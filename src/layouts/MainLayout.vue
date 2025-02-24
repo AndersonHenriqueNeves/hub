@@ -38,11 +38,18 @@
                   >Cadastrar</a
                 >
               </li>
-              <li>
+              <li v-if="!userLogado">
                 <a
                   @click="changeRoute('/login')"
                   :class="{ 'active-border': model == '/login' }"
                   >Login</a
+                >
+              </li>
+              <li v-if="userLogado">
+                <a
+                  @click="changeRoute('/inscricoes')"
+                  :class="{ 'active-border': model == '/inscricoes' }"
+                  >Inscrições</a
                 >
               </li>
             </ul>
